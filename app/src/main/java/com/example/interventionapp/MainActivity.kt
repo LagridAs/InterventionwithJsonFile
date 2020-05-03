@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity(),Communicator {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        var listInter= mutableListOf<Intervention>(
+        /*var listInter= mutableListOf<Intervention>(
             Intervention(1, "02/05/2020","Mohamed","Reparation"),
             Intervention(2, "03/05/2020","Imad","Entretien"),
             Intervention(3, "04/05/2020","Houssem","Installation")
@@ -50,9 +50,9 @@ class MainActivity : AppCompatActivity(),Communicator {
         }
         removeBtn.setOnClickListener {
             suppIntervention(1,"02/05/2020","Mohamed","Reparation")
-        }
-        //var fragment = ConsulterFragment()
-        //supportFragmentManager.beginTransaction().replace(R.id.mainAct,fragment).commit()
+        }*/
+        var fragment = ConsulterFragment()
+        supportFragmentManager.beginTransaction().replace(R.id.mainAct,fragment).commit()
     }
     private fun readInternalDemo() {
         val file = File(filesDir, "intervention.json")
