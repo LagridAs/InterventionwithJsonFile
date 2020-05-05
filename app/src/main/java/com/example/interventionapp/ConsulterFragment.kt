@@ -58,7 +58,6 @@ class ConsulterFragment : Fragment() {
         dtBtn?.setOnClickListener {
             GlobalScope.launch {
                 val dt= dataChooseEdit?.text.toString()
-                Log.d(ContentValues.TAG,"dateeeeeeee lewlaaaa"+ dt)
              comm.passListIv(dt) }
         }
     }
