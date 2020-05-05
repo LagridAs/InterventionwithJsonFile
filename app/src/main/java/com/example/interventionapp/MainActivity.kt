@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -12,74 +13,49 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
-import java.util.function.Predicate
 
 
 class MainActivity : AppCompatActivity(),Communicator {
+    lateinit var typeList:MutableList<TypeIv>
+    lateinit var plomList:MutableList<Plombier>
+    lateinit var interventions:MutableList<Intervention>
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        /*var listInter= mutableListOf<Intervention>(
-            Intervention(1, "02/05/2020","Mohamed","Reparation"),
-            Intervention(2, "03/05/2020","Imad","Entretien"),
-            Intervention(3, "04/05/2020","Houssem","Installation")
+        typeList= mutableListOf<TypeIv>(
+            TypeIv("Reparation"),
+            TypeIv("Depannage"),
+            TypeIv("Installation"),
+            TypeIv("Entretien")
+
         )
-        createInterventions(listInter)
-        dateBtn.setOnClickListener {
-            val str="03/05/2020"
-            Log.d(ContentValues.TAG,"avant ")
 
-            val listDate:MutableList<Intervention> = getInterventionDt(str)
-            for (item in listDate){
-                Log.d(ContentValues.TAG,"Les intervention de la date" + str + "sont:")
-                Log.d(ContentValues.TAG,"numero:" + item.numero.toString() + "date:"+ item.date + "plombier:"+
-                        item.plombier + "type:"+ item.Type)
-
-            }
-
+         plomList= mutableListOf<Plombier>(
+            Plombier("Lagrid Houssem") ,
+            Plombier("Lagrid Zakaria"),
+            Plombier("Madani Anes"),
+            Plombier("Djellab Mohamed")
+        )
+         interventions= mutableListOf<Intervention>(
+            Intervention("1", "02/05/2020",plomList[1],typeList[1]),
+            Intervention("2", "03/05/2020",plomList[2],typeList[2]),
+            Intervention("3", "04/05/2020",plomList[3],typeList[3])
+        )
+        GlobalScope.launch {
+            createInterventions(interventions)
         }
 
-        addBtn.setOnClickListener {
-            //addIntervention(4,"09-05-2020","Zakaria","Reparation")
-        }
-        removeBtn.setOnClickListener {
-            suppIntervention(1,"02/05/2020","Mohamed","Reparation")
-        }*/
-        var fragment = ConsulterFragment()
+            var fragment = ConsulterFragment()
         supportFragmentManager.beginTransaction().replace(R.id.mainAct,fragment).commit()
     }
-    private fun readInternalDemo() {
-        val file = File(filesDir, "intervention.json")
-        if (!file.exists()) {
-            Toast.makeText(this, "Failed: file does not exist", Toast.LENGTH_LONG).show()
-            return
-        }
-        var fis: FileInputStream? = null
-        var textContent = ""
-        try {
-            fis = FileInputStream(file)
-            val br = BufferedReader(InputStreamReader(fis))
-            textContent = br.readLine()
-        } catch (e: java.lang.Exception) {
-            Toast.makeText(this, "Failed: " + e.message, Toast.LENGTH_LONG).show()
-        } finally {
-            if (fis != null) {
-                Toast.makeText(this, "Read Successfully: $textContent", Toast.LENGTH_LONG).show()
-                try {
-                    fis.close()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    Toast.makeText(this, "Failed to read!", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
+
     fun readFromFile(): String? {
         var ret = ""
         var fis: FileInputStream? = null
@@ -133,12 +109,13 @@ class MainActivity : AppCompatActivity(),Communicator {
             val outputWriter = OutputStreamWriter(fileout)
             outputWriter.write(jsonString)
             outputWriter.close()
+            fileout.close()
 
             //display file saved message
-            Toast.makeText(
+            /*Toast.makeText(
                 baseContext, "File saved successfully!",
                 Toast.LENGTH_SHORT
-            ).show()
+            ).show()*/
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -158,8 +135,10 @@ class MainActivity : AppCompatActivity(),Communicator {
             listIntervention.add(gson.fromJson(jsonObject.toString(), Intervention::class.java))
         }
         for (item in listIntervention) {
-            Log.d(ContentValues.TAG,item.numero.toString()+" "+item.date+" "+item.Type+" "+item.plombier)
+            print("rani dakhal la boucle ta3 get Intervention")
+            Log.d(ContentValues.TAG,item.numero+" "+ item.date+" "+ item.Type?.intitule+" "+item.plombier?.nom)
         }
+        Log.d(ContentValues.TAG,"kharej getIntervention")
         return listIntervention
     }
     fun getInterventionDt(date:String):MutableList<Intervention>
@@ -179,45 +158,26 @@ class MainActivity : AppCompatActivity(),Communicator {
             }
         }
         for (item in listIntervention) {
-            Log.d(ContentValues.TAG,item.numero.toString()+" "+item.date+" "+item.Type+" "+item.plombier)
+            Log.d(ContentValues.TAG,item.numero+" "+item.date+" "+item.Type+" "+item.plombier)
         }
         return listIntervention
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun suppIntervention(numero:Int, date:String, plombier:String, Type:String)
-    {
-        var jsonString:String?=readFromFile()
-        var listIntervention= mutableListOf<Intervention>()
-        var jsonArray= JSONArray(jsonString)
-        var gson= Gson()
-        var jsonObject= JSONObject()
-        Log.d(ContentValues.TAG,"avant boucle ")
-        for (i in 0 until jsonArray.length()) {
-            jsonObject = jsonArray.getJSONObject(i)
-            listIntervention.add(gson.fromJson(jsonObject.toString(), Intervention::class.java))
-        }
-
-                /*val condition: Predicate<Intervention> =
-                    Predicate<Intervention> { interv: Intervention ->
-                        (interv.numero==numero)
-                    }*/
-        val it=Intervention(numero,date,plombier,Type)
-        listIntervention.remove(it)
-        createInterventions(listIntervention)
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun passListIv(date: String) {
-        val bundle1 = Bundle()
-        val listIv:Serializable = if(date==""){
-            getIntervention() as Serializable
 
-        } else{
-            getInterventionDt(date) as Serializable
+        val bundle1 = Bundle()
+        val listIv:Serializable
+        if(date==""){
+            Log.d(ContentValues.TAG,"dakhallll pass List Iv")
+            listIv= getIntervention() as ArrayList<Parcelable>
         }
-        bundle1.putSerializable("ListInter",listIv)
+        else{
+            listIv= getInterventionDt(date) as ArrayList<Parcelable>
+
+        }
+        bundle1.putParcelableArrayList("ListInter",listIv)
+        //bundle1.putSerializable("ListInter",listIv)
         val transaction = this.supportFragmentManager.beginTransaction()
         val frag = InterventionList()
         frag.arguments = bundle1

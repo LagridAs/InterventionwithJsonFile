@@ -7,4 +7,5 @@ interface Communicator {
     fun passListIv(date: String)
     fun passInterv(inter: Intervention,frag:Fragment)
 
+
 }

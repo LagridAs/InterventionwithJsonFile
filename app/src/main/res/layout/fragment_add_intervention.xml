@@ -34,7 +34,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
-        app:layout_constraintVertical_bias="0.148">
+        app:layout_constraintVertical_bias="0.068">
 
         <TextView
             android:layout_width="wrap_content"
@@ -49,7 +49,7 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/numEdit"
+            android:id="@+id/numEditAj"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Numero" />
@@ -80,11 +80,12 @@
             android:textSize="18dp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/typeEdit"
+        <Spinner
+            android:id="@+id/typeSpinnerAj"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Type" />
+            android:spinnerMode="dropdown"
+            />
 
     </LinearLayout>
 
@@ -112,11 +113,12 @@
             android:textSize="18dp"
             android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/plombierEdit"
+        <Spinner
+            android:id="@+id/plSpinnerAj"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Plombier" />
+            android:spinnerMode="dropdown"
+            />
 
     </LinearLayout>
 
@@ -145,7 +147,7 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/dateEdit"
+            android:id="@+id/dateImgAj"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="Date" />
@@ -160,8 +162,10 @@
         android:textColor="@color/jaune"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout6"
+        app:layout_constraintVertical_bias="0.033" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

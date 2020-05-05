@@ -27,7 +27,6 @@
         android:id="@+id/dateInterBtn"
         android:layout_width="260dp"
         android:layout_height="45dp"
-        android:layout_marginTop="72dp"
         android:gravity="center_horizontal"
         android:text="Intervention par date"
         android:textAlignment="center"
@@ -35,23 +34,23 @@
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/tousInterBtn"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/tousInterBtn"
-        app:layout_constraintTop_toBottomOf="@+id/tousInterBtn"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chooseDate"
+        app:layout_constraintVertical_bias="0.141" />
 
-    <ImageView
+    <EditText
         android:id="@+id/chooseDate"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="368dp"
-        android:src="@drawable/ic_clock"
-        android:clickable="true"
+        android:layout_width="260dp"
+        android:layout_height="45dp"
+        android:hint="Date"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.228"
-        app:layout_constraintStart_toEndOf="@+id/dateInterBtn" />
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tousInterBtn"
+        app:layout_constraintVertical_bias="0.135" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

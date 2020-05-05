@@ -49,7 +49,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/numEditMod"
+            android:id="@+id/numTxMod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
@@ -86,10 +86,10 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/typeEditMod"
+            android:id="@+id/typeMod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Type" />
+             />
 
     </LinearLayout>
 
@@ -118,10 +118,10 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/plombierEditMod"
+            android:id="@+id/plombierMod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Plombier" />
+            />
 
     </LinearLayout>
 
@@ -150,10 +150,10 @@
             android:textStyle="bold" />
 
         <EditText
-            android:id="@+id/dateEditMod"
+            android:id="@+id/dateMod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="Date" />
+            />
 
     </LinearLayout>
 

@@ -1,28 +1,33 @@
 package com.example.interventionapp
 
+import android.app.DatePickerDialog
 import android.content.ContentValues
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
+import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
 import com.google.gson.Gson
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
 
 class AddInterventionFrag : Fragment() {
-    private var v:View?=null
-    private var confirmer:Button?=null
-    private var typeEd:EditText?=null
-    private var numEd:EditText?=null
-    private var plomEd:EditText?=null
-    private var dtEd:EditText?=null
-    private lateinit var comm:Communicator
+    var v:View?=null
+    var numEdit:EditText?= null
+    var tySpinner:Spinner?= null
+    var plSpinner:Spinner?= null
+    var dtImage:EditText?=null
+    var confBtn:Button?=null
+    var comm:Communicator?=null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,25 +45,89 @@ class AddInterventionFrag : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        comm= activity as Communicator
-        typeEd = v?.findViewById(R.id.typeEdit)
-        numEd = v?.findViewById(R.id.numEdit)
-        plomEd = v?.findViewById(R.id.plombierEdit)
-        dtEd = v?.findViewById(R.id.dateEdit)
-        confirmer= v?.findViewById(R.id.confAjou)
+        init()
+        confBtn?.setOnClickListener {
+            val numIv= numEdit?.text.toString()
+            val dateeIv = dtImage?.text.toString()
+                    //
+            var typeIv:TypeIv?= null
+            var plomIv:Plombier?= null
 
-        val type = typeEd?.text.toString()
-        val numero = Integer.parseInt(numEd?.text.toString())
-        val plombier = plomEd?.text.toString()
-        val date = dtEd?.text.toString()
-        var interv = Intervention(numero, date, plombier, type)
-        confirmer?.setOnClickListener {
-            addIntervention(interv)
-            comm.passListIv("")
+            val ty: String = tySpinner?.selectedItem.toString()
+            val plom: String = plSpinner?.selectedItem.toString()
+            for(item in (activity as MainActivity).plomList)
+            {
+                if(item.nom==plom){
+                    plomIv=item
+                }
+            }
+            for(item in (activity as MainActivity).typeList)
+            {
+                if(item.intitule==ty){
+                    typeIv=item
+                }
+            }
+
+            val inter=Intervention(numIv,dateeIv,plomIv,typeIv)
+                    //
+            addIntervention(inter)
+
         }
     }
-        @RequiresApi(Build.VERSION_CODES.O)
-        fun addIntervention(interv: Intervention){
+    fun init(){
+        comm= activity as Communicator
+        numEdit= v?.findViewById(R.id.numEditAj)
+        dtImage= v?.findViewById(R.id.dateImgAj)
+        confBtn= v?.findViewById(R.id.confAjou)
+        //spinner
+        val plombierNames:ArrayList<String> = arrayListOf()
+        val plombiers = (activity as MainActivity).plomList
+        for (element in plombiers){
+            plombierNames.add(element.nom)
+        }
+
+        // Initializing an ArrayAdapter
+        val adapter = context?.let {
+            ArrayAdapter(
+                it, // Context
+                android.R.layout.simple_spinner_item, // Layout
+                plombierNames // Array
+            )
+        }
+
+        // Set the drop down view resource
+        adapter?.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+
+        // Finally, data bind the spinner object with dapter
+        plSpinner= v?.findViewById<Spinner>(R.id.plSpinnerAj)
+        plSpinner?.adapter = adapter
+        //fin spinner
+        //spinner
+        val typeNames:ArrayList<String> = arrayListOf()
+        val types = (activity as MainActivity).typeList
+        for (element in types){
+            typeNames.add(element.intitule)
+        }
+
+        // Initializing an ArrayAdapter
+        val adapterT = context?.let {
+            ArrayAdapter(
+                it, // Context
+                android.R.layout.simple_spinner_item, // Layout
+                typeNames // Array
+            )
+        }
+
+        // Set the drop down view resource
+        adapterT?.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+
+        // Finally, data bind the spinner object with dapter
+        tySpinner= v?.findViewById<Spinner>(R.id.typeSpinnerAj)
+        tySpinner?.adapter = adapterT
+        //fin spinner
+    }
+         @RequiresApi(Build.VERSION_CODES.O)
+        fun addIntervention(intervention: Intervention){
 
             var jsonString:String?=(activity as MainActivity).readFromFile()
             var listIntervention= mutableListOf<Intervention>()
@@ -70,12 +139,11 @@ class AddInterventionFrag : Fragment() {
                 jsonObject = jsonArray.getJSONObject(i)
                 listIntervention.add(gson.fromJson(jsonObject.toString(), Intervention::class.java))
             }
-            listIntervention.add(interv)
-            (activity as MainActivity).createInterventions(listIntervention)
-
-            for (item in listIntervention) {
-                Log.d(ContentValues.TAG,item.numero.toString()+" "+item.date+" "+item.Type+" "+item.plombier)
+            listIntervention.add(intervention)
+            GlobalScope.launch {  (activity as MainActivity).createInterventions(listIntervention)
+                comm?.passListIv("")
             }
+
         }
 
 

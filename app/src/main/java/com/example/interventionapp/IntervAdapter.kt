@@ -44,9 +44,11 @@ class IntervAdapter(private val dataList:MutableList<Intervention>):RecyclerView
         ) {
 
         private var numTextView:TextView?=null
+        private var tyTextView:TextView?=null
         private var detBtn:Button?=null
 
         init {
+            tyTextView=itemView.findViewById(R.id.interType)
             numTextView=itemView.findViewById(R.id.interNum)
             detBtn= itemView.findViewById(R.id.detailsBtn)
         }
@@ -54,7 +56,8 @@ class IntervAdapter(private val dataList:MutableList<Intervention>):RecyclerView
         @SuppressLint("SetTextI18n")
         @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
         fun bind(interv:Intervention) {
-            numTextView?.text= "Intervention: ${interv.numero} de ${interv.Type}"
+            tyTextView?.text= interv.Type?.intitule
+            numTextView?.text= "Intervention: ${interv.numero}"
             detBtn?.setOnClickListener {
                 onItemClick?.invoke(interv)
             }

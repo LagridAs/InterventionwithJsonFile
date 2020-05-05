@@ -14,6 +14,8 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import com.google.gson.Gson
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -26,7 +28,7 @@ class InterventionDetailsFrag : Fragment() {
     private var numeroView:TextView?=null
     private var dateView:TextView?=null
     private var plombierView:TextView?=null
-    private var intervention:Intervention?=arguments?.getSerializable("Intervention") as Intervention
+    private lateinit var intervention:Intervention
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +48,15 @@ class InterventionDetailsFrag : Fragment() {
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        init()
+        typeView?.text=intervention.Type?.intitule
+        numeroView?.text=intervention.numero.toString()
+        plombierView?.text=intervention.plombier?.nom
+        dateView?.text=intervention.date
+    }
+
+    fun init(){
+        intervention=arguments?.getSerializable("Intervention") as Intervention
         commm= activity as Communicator
         supprimerBtn= v?.findViewById(R.id.suppIv)
         modifierBtn=v?.findViewById(R.id.modifIv)
@@ -56,13 +67,10 @@ class InterventionDetailsFrag : Fragment() {
 
         supprimerBtn?.setOnClickListener { supprimerDialog() }
         modifierBtn?.setOnClickListener {
-            val frag=EditInterventionFrag()
-            intervention?.let { it1 -> commm.passInterv(it1,frag) }
+            GlobalScope.launch {
+                val frag=EditInterventionFrag()
+                intervention.let { it1 -> commm.passInterv(it1,frag) }}
         }
-        typeView?.text=intervention?.Type
-        numeroView?.text=intervention?.numero.toString()
-        plombierView?.text=intervention?.plombier
-        dateView?.text=intervention?.date
     }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -73,10 +81,11 @@ class InterventionDetailsFrag : Fragment() {
 
         val confirmerBtn = dialogView.findViewById<Button>(R.id.confSupp)
         confirmerBtn.setOnClickListener {
-            intervention?.let { it1 -> suppIntervention(it1) }
+            GlobalScope.launch {
+            intervention.let { it1 -> suppIntervention(it1) }}
         }
         val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(context)
-        dialogBuilder.setOnDismissListener { }
+        dialogBuilder.setOnDismissListener {commm.passListIv("")}
         dialogBuilder.setView(dialogView)
         alertDialog = dialogBuilder.create()
         //alertDialog.window!!.getAttributes().windowAnimations = R.style.PauseDialogAnimation
@@ -96,14 +105,8 @@ class InterventionDetailsFrag : Fragment() {
             jsonObject = jsonArray.getJSONObject(i)
             listIntervention.add(gson.fromJson(jsonObject.toString(), Intervention::class.java))
         }
-
-        /*val condition: Predicate<Intervention> =
-            Predicate<Intervention> { interv: Intervention ->
-                (interv.numero==numero)
-            }*/
-        //val it=Intervention(numero,date,plombier,Type)
         listIntervention.remove(inter)
-        (activity as MainActivity?)?.createInterventions(listIntervention)
+        GlobalScope.launch {(activity as MainActivity?)?.createInterventions(listIntervention)}
     }
 
 

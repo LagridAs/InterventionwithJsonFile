@@ -1,5 +1,6 @@
 package com.example.interventionapp
 
+import android.app.DatePickerDialog
 import android.content.ContentValues
 import android.os.Build
 import android.os.Bundle
@@ -9,23 +10,25 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
 
 class EditInterventionFrag : Fragment() {
     private var v:View?=null
-    private var confirmer: Button?=null
-    private var typeEd: EditText?=null
-    private var numEd: TextView?=null
-    private var plomEd: EditText?=null
-    private var dtEd: EditText?=null
+    var numEdit:TextView?= null
+    var typeEdit:EditText?= null
+    var plEdit:EditText?= null
+    var dtEdit:EditText?=null
+    var confBtn:Button?=null
     private lateinit var comm:Communicator
-    private var intervention= arguments?.getSerializable("Intervention") as Intervention
+    private lateinit var intervention:Intervention
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,27 +44,48 @@ class EditInterventionFrag : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        comm= activity as Communicator
-        typeEd = v?.findViewById(R.id.typeEditMod)
-        numEd = v?.findViewById(R.id.numEditMod)
-        plomEd = v?.findViewById(R.id.plombierEditMod)
-        dtEd = v?.findViewById(R.id.dateEditMod)
-        confirmer=v?.findViewById(R.id.confEdit)
+        intervention= arguments?.getSerializable("Intervention") as Intervention
+        init()
+        confBtn?.setOnClickListener {
+            val numIv= intervention.numero
+            val ty= typeEdit?.text.toString()
+            val plom= plEdit?.text.toString()
+            val dateIv= dtEdit?.text.toString()
+            var plombierIv:Plombier?=null
+            var typeIv:TypeIv?=null
 
-        typeEd?.text = Editable.Factory.getInstance().newEditable(intervention.Type)
-        numEd?.text = intervention.numero.toString()
-        plomEd?.text = Editable.Factory.getInstance().newEditable(intervention.plombier)
-        dtEd?.text = Editable.Factory.getInstance().newEditable(intervention.date)
+            for(item in (activity as MainActivity).plomList)
+            {
+                if(item.nom==plom){
+                    plombierIv=item
+                }
+            }
+            for(item in (activity as MainActivity).typeList)
+            {
+                if(item.intitule==ty){
+                    typeIv=item
+                }
+            }
+            val NV= Intervention(numIv,dateIv,plombierIv,typeIv)
+            editIntervention(intervention,NV)
 
-        val type = typeEd?.text.toString()
-        val numero = intervention.numero
-        val plombier = plomEd?.text.toString()
-        val date = dtEd?.text.toString()
-        var intervNv = Intervention(numero, date, plombier, type)
-        confirmer?.setOnClickListener {
-            editIntervention(intervention,intervNv)
-            comm.passListIv("")
         }
+
+
+
+    }
+    fun init(){
+        comm= activity as Communicator
+        numEdit= v?.findViewById(R.id.numTxMod)
+        typeEdit=v?.findViewById(R.id.typeMod)
+        plEdit=v?.findViewById(R.id.plombierMod)
+        dtEdit=v?.findViewById(R.id.dateMod)
+        confBtn=v?.findViewById(R.id.confEdit)
+
+        numEdit?.text= intervention.numero
+        typeEdit?.text = Editable.Factory.getInstance().newEditable(intervention.Type?.intitule.toString())
+        plEdit?.text = Editable.Factory.getInstance().newEditable(intervention.plombier?.nom.toString())
+        dtEdit?.text = Editable.Factory.getInstance().newEditable(intervention.date.toString())
     }
     @RequiresApi(Build.VERSION_CODES.O)
     fun editIntervention(inter:Intervention,interNv:Intervention)
@@ -85,7 +109,10 @@ class EditInterventionFrag : Fragment() {
         listIntervention.find {it.numero == inter.numero  }?.date =interNv.date
         listIntervention.find {it.numero == inter.numero  }?.plombier =interNv.plombier
 
-        (activity as MainActivity).createInterventions(listIntervention)
+        GlobalScope.launch {(activity as MainActivity).createInterventions(listIntervention)
+            val frag= InterventionDetailsFrag()
+            comm.passInterv(interNv,frag)}
+
     }
 
     companion object {
@@ -94,4 +121,5 @@ class EditInterventionFrag : Fragment() {
         }
 
     }
+
 }
