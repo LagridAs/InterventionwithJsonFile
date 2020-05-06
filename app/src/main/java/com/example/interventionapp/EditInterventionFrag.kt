@@ -87,7 +87,6 @@ class EditInterventionFrag : Fragment() {
         plEdit?.text = Editable.Factory.getInstance().newEditable(intervention.plombier?.nom.toString())
         dtEdit?.text = Editable.Factory.getInstance().newEditable(intervention.date.toString())
     }
-    @RequiresApi(Build.VERSION_CODES.O)
     fun editIntervention(inter:Intervention,interNv:Intervention)
     {
         var jsonString:String?=(activity as MainActivity).readFromFile()
@@ -95,24 +94,23 @@ class EditInterventionFrag : Fragment() {
         var jsonArray= JSONArray(jsonString)
         var gson= Gson()
         var jsonObject= JSONObject()
-        Log.d(ContentValues.TAG,"avant boucle ")
+        Log.d(ContentValues.TAG,"avant boucle edit")
         for (i in 0 until jsonArray.length()) {
             jsonObject = jsonArray.getJSONObject(i)
             listIntervention.add(gson.fromJson(jsonObject.toString(), Intervention::class.java))
         }
 
-        /*val condition: Predicate<Intervention> =
-            Predicate<Intervention> { interv: Intervention ->
-                (interv.numero==numero)
-            }*/
         listIntervention.find {it.numero == inter.numero  }?.Type =interNv.Type
         listIntervention.find {it.numero == inter.numero  }?.date =interNv.date
         listIntervention.find {it.numero == inter.numero  }?.plombier =interNv.plombier
+        for(item in listIntervention )
+        {
+            Log.d(ContentValues.TAG,item.date + item.Type?.intitule + item.numero + item.plombier?.nom)
+        }
 
         GlobalScope.launch {(activity as MainActivity).createInterventions(listIntervention)
             val frag= InterventionDetailsFrag()
-            comm.passInterv(interNv,frag)}
-
+            comm.passListIv("")}
     }
 
     companion object {

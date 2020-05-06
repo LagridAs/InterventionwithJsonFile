@@ -111,11 +111,6 @@ class MainActivity : AppCompatActivity(),Communicator {
             outputWriter.close()
             fileout.close()
 
-            //display file saved message
-            /*Toast.makeText(
-                baseContext, "File saved successfully!",
-                Toast.LENGTH_SHORT
-            ).show()*/
         } catch (e: Exception) {
             e.printStackTrace()
         }
